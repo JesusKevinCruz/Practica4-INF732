@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { DataSource } from 'typeorm';
+import { getDataSourceToken } from '@nestjs/typeorm';
 
 describe('TareasController (e2e)', () => {
   let app: INestApplication;
@@ -18,9 +18,9 @@ describe('TareasController (e2e)', () => {
   });
 
   afterAll(async () => {
-    const dataSource = app.get(DataSource);
-    await dataSource.destroy();
-    await app.close();
+    const dataSource = app.get(getDataSourceToken());
+    await dataSource.destroy(); // cierra conexión a la base de datos
+    await app.close(); // cierra app
   });
 
   it('/tareas (POST)', async () => {
@@ -67,4 +67,3 @@ describe('TareasController (e2e)', () => {
     await request(app.getHttpServer()).delete(`/tareas/${createdId}`).expect(200);
   });
 });
-
